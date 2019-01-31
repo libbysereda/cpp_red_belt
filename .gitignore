@@ -1,0 +1,5 @@
+# Log file
+*.log
+
+# tutor's solutions
+tutor_solutions/
