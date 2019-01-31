@@ -49,7 +49,7 @@ private:
   logger.Log(os.str());                                      \
 }
 
-/*
+
 void TestLog() {
 
 #line 1 "logger.cpp"
@@ -79,4 +79,3 @@ int main() {
     RUN_TEST(tr, TestLog);
 
 }
-*/
