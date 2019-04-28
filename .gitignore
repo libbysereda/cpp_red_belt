@@ -6,3 +6,6 @@ tutor_solutions/
 
 # DS files
 *.DS_Store
+
+# Unignore all dirs
+!*/
