@@ -2,7 +2,7 @@
 #include <ostream>
 using namespace std;
 
-// test
+// test1
 
 class Logger {
 public:
