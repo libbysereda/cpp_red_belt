@@ -1,3 +1,7 @@
+/*
+** Working on macro lectures
+*/
+
 #include <iostream>
 #include <map>
 #include <set>
@@ -146,10 +150,7 @@ int main() {
   TestRunner runner;
   runner.RunTest(TestDefaultConstructor, "Default constructor");
   runner.RunTest(TestReductionToLowestTerms, "Reduction to lowest terms");
-  return 0;
-}
-
-/*
+  /*
   runner.RunTest(TestReductionWithNegativeNumerator, "Reduction negative numerator");
   runner.RunTest(TestReductionWithNegativeDenominator, "Reduction negative denominator");
   runner.RunTest(TestEqualFractions, "Equal fractions");
@@ -162,3 +163,5 @@ int main() {
   runner.RunTest(TestPositiveFraction, "Test positive fractions");
   runner.RunTest(TestZeroNegativeOne, "Test 0/-1");
   */
+  return 0;
+}
