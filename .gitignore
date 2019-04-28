@@ -4,5 +4,5 @@
 # tutor's solutions
 tutor_solutions/
 
-# tutor's solutions
-lectures/
+# DS files
+*.DS_Store
