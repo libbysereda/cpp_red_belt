@@ -6,3 +6,6 @@
 
 # executables
 *.o
+
+# tutor solutions
+**tutor_solutions/
