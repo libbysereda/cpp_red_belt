@@ -2,7 +2,7 @@
 *.log
 
 # tutor's solutions
-tutor_solutions/
+**tutor_solutions/
 
 # DS files
 *.DS_Store
