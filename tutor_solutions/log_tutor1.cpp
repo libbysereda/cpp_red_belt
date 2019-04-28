@@ -2,6 +2,8 @@
 #include <ostream>
 using namespace std;
 
+// test
+
 class Logger {
 public:
   explicit Logger(ostream& output_stream) : os(output_stream) {
