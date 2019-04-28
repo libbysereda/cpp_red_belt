@@ -1,10 +1,8 @@
-
 //
 //  log.cpp
-//  red_belt
+//  cpp_red_belt
 //
-//  Created by Liubov Sereda on 30/01/2019.
-//  Copyright © 2019 Liubov Sereda. All rights reserved.
+//  Created by Libby Sereda on 30/01/2019.
 //
 
 #include "test_runner.h"
