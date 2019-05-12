@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// Write macro SORT_BY and overload operators for Date and Time.
+// TODO: write macro SORT_BY and overload operators for Date and Time.
 #define SORT_BY(field)                                     \
   [](const AirlineTicket& lhs, const AirlineTicket& rhs) { \
     return lhs.field < rhs.field;                          \
