@@ -1,9 +1,57 @@
 #include "airline_ticket.h"
 #include "test_runner.h"
 
+#include <map>
+#include <istream>
+#include <tuple>
+#include <iomanip>
+
 using namespace std;
 
-#define UPDATE_FIELD(ticket, field, values)  // Реализуйте этот макрос, а также необходимые операторы для классов Date и Time
+// TODO: write macro UPDATE_FIELD and overload operators for Date and Time.
+#define UPDATE_FIELD(ticket, field, values) \
+  if (values.count(#field) != 0) {          \
+    istringstream is(values.at(#field));    \
+    is >> ticket.field;                     \
+  }
+
+// overload operators for Date and Time:
+ostream& operator<<(ostream& os, const Date& date) {
+    return os << setw(4) << setfill('0') << date.year << '-'
+              << setw(2) << setfill('0') << date.month << '-'
+              << setw(2) << setfill('0') << date.day;
+}
+
+ostream& operator<<(ostream& os, const Time& time) {
+    return os << setw(2) << setfill('0') << time.hours << ':'
+              << setw(2) << setfill('0') << time.minutes;
+}
+
+istream& operator>>(istream& is, Date& date) {
+  is >> date.year;
+  is.ignore(1);
+  is >> date.month;
+  is.ignore(1);
+  is >> date.day;
+  return is;
+}
+
+istream& operator>>(istream& is, Time& time) {
+  is >> time.hours;
+  is.ignore(1);
+  is >> time.minutes;
+  return is;
+}
+
+bool operator==(const Date& lhs, const Date& rhs) {
+  return tie(lhs.year, lhs.month, lhs.day)
+         == tie(rhs.year, rhs.month, rhs.day);
+}
+
+bool operator==(const Time& lhs, const Time& rhs) {
+  return tie(lhs.hours, lhs.minutes)
+         == tie(rhs.hours, rhs.minutes);
+}
 
 void TestUpdate() {
   AirlineTicket t;
