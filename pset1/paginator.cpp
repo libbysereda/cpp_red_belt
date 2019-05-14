@@ -38,27 +38,18 @@ public:
 template <typename Iterator>
 class Paginator {
 private:
-  Iterator first;
-  Iterator last;
-  size_t page_size;
   vector<Page<Iterator>> pages;
 
-  void paginate() {
-    for (auto begin = first; begin < last; begin += page_size) {
-      auto end = begin + page_size > last ? last : begin + page_size;
+public:
+  Paginator(Iterator first, Iterator last, size_t size) {
+    for (auto begin = first; begin < last; begin += size) {
+      auto end = begin + size > last ? last : begin + size;
+
       pages.push_back(
         { begin, end, static_cast<size_t>(distance(begin, end)) }
       );
-    }
-  }
 
-public:
-  Paginator(Iterator f, Iterator l, size_t s)
-  : first(f)
-  , last(l)
-  , page_size(s)
-  {
-    paginate();
+    }
   }
 
   auto begin() const {
@@ -107,7 +98,7 @@ void TestLooping() {
     }
     os << '\n';
   }
-  
+
   ASSERT_EQUAL(os.str(), "1 2 3 4 5 6 \n7 8 9 10 11 12 \n13 14 15 \n");
 }
 
