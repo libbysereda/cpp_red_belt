@@ -6,15 +6,46 @@
 #include <string>
 using namespace std;
 
-// Реализуйте шаблон класса Paginator
-
 template <typename Iterator>
-class Paginator {
+struct Page {
+  Iterator begin;
+  Iterator end;
+  size_t page_size; ??
 };
 
+// Write class template Paginator
+template <typename Iterator>
+class Paginator {
+private:
+  Iterator begin;
+  Iterator end;
+  size_t page_size;
+  vector<Page> pages;
+
+public:
+  Paginator(Iterator b, Iterator e, size_t s)
+  : begin(b)
+  , end(e)
+  , page_size(s)
+  {}
+
+  Iterator begin() const {
+    return begin;
+  }
+
+  Iterator end() const {
+    return end;
+  }
+
+  size_t size() const {
+    // return # of pages for Container begin/end
+  }
+};
+
+// Write function template Paginate
 template <typename C>
 ??? Paginate(C& c, size_t page_size) {
-  // Реализуйте этот шаблон функции
+
 }
 
 void TestPageCounts() {
