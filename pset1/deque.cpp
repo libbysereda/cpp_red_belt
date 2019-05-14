@@ -4,19 +4,10 @@
 
 #include <iostream>
 #include <vector>
-//#include "test_runner.h"
+#include "test_runner.h"
 #include <string>
 
 using namespace std;
-
-#define GET_INDEX \
-  if (index < front_size) { \
-    return front_[front_size - 1 - index]; \
-  } \
-  else if (index - front_size < back_size) { \
-    return back_[index - front_size]; \
-  } else { \
-   throw out_of_range("Index is out of range"); }
 
 template <typename T>
 class Deque {
@@ -32,61 +23,66 @@ public:
   }
 
   T& At(const size_t& index) {
-    GET_INDEX
+    if (index < front_.size()) {
+      return front_[front_.size() - 1 - index];
+    }
+
+    if (index - front_.size() < back_.size()) {
+      return back_[index - front_.size()];
+    }
+
+    throw out_of_range("Index is out of range");
   }
 
   const T& At(size_t index) const {
-    GET_INDEX
+    return const_cast<T&>(At(index));
   }
 
   T& operator[](size_t index) {
-    GET_INDEX
+    if (index < front_.size()) {
+      return front_[front_.size() - 1 - index];
+    }
+    return back_[index - front_.size()];
   }
 
   const T& operator[](size_t index) const {
-    GET_INDEX
+    return const_cast<T&>(At(index));
   }
 
   T& Front() {
-    if (front_.empty()) {
-      return back_[0];
-    }
-    return front_.back();
+    return front_.empty()
+      ? back_.front()
+      : front_.back();
   }
 
   const T& Front() const {
-    return Front();
+    return const_cast<T&>(Front());
   }
 
   T& Back() {
-    if (back_.empty()) {
-      return front_[0];
-    }
-    return back_.back();
+    return back_.empty()
+      ? front_.front()
+      : back_.back();
   }
 
   const T& Back() const {
-    return Back();
+    return const_cast<T&>(Back());
   }
 
   void PushFront(const T& value) {
     front_.push_back(value);
-    ++front_size;
   }
 
   void PushBack(const T& value) {
     back_.push_back(value);
-    ++back_size;
   }
 
 private:
   vector<T> front_;
   vector<T> back_;
-  size_t front_size = 0;
-  size_t back_size = 0;
 };
 
-/*
+
 // Tests
 void testConstructor() {
   Deque<string> d;
@@ -278,7 +274,6 @@ void testAt() {
   } catch (const out_of_range& e) {
     ASSERT_EQUAL(e.what(), string("Index is out of range"));
   }
-
 }
 
 void testDeque() {
@@ -299,4 +294,3 @@ int main() {
   RUN_TEST(tr, testDeque);
   return 0;
 }
-*/
