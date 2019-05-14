@@ -62,12 +62,12 @@ public:
     paginate();
   }
 
-  Iterator begin() const {
-    return first;
+  auto begin() const {
+    return pages.begin();
   }
 
-  Iterator end() const {
-    return last;
+  auto end() const {
+    return pages.end();
   }
 
   size_t size() const {
@@ -91,6 +91,9 @@ void TestPageCounts() {
   ASSERT_EQUAL(Paginate(v, 15).size(), 1u);
   ASSERT_EQUAL(Paginate(v, 150).size(), 1u);
   ASSERT_EQUAL(Paginate(v, 14).size(), 2u);
+
+  vector<int> v1;
+  ASSERT_EQUAL(Paginate(v1, 1).size(), 0u);
 }
 
 /*
@@ -108,10 +111,11 @@ void TestLooping() {
   }
 
   ASSERT_EQUAL(os.str(), "1 2 3 4 5 6 \n7 8 9 10 11 12 \n13 14 15 \n");
-}
+}*/
 
 void TestModification() {
   vector<string> vs = {"one", "two", "three", "four", "five"};
+
   for (auto page : Paginate(vs, 2)) {
     for (auto& word : page) {
       word[0] = toupper(word[0]);
@@ -121,7 +125,7 @@ void TestModification() {
   const vector<string> expected = {"One", "Two", "Three", "Four", "Five"};
   ASSERT_EQUAL(vs, expected);
 }
-*/
+
 /*
 void TestPageSizes() {
   string letters(26, ' ');
@@ -148,12 +152,14 @@ void TestConstContainer() {
   ASSERT_EQUAL(pages, expected);
 }
 */
+/*
 void TestPagePagination() {
   vector<int> v(22);
   iota(begin(v), end(v), 1);
 
   vector<vector<int>> lines;
   for (const auto& split_by_9 : Paginate(v, 9)) {
+    cout << split_by_9.size() << endl;
     for (const auto& split_by_4 : Paginate(split_by_9, 4)) {
       lines.push_back({});
       for (int item : split_by_4) {
@@ -173,13 +179,14 @@ void TestPagePagination() {
   };
   ASSERT_EQUAL(lines, expected);
 }
+*/
 
 int main() {
   TestRunner tr;
   RUN_TEST(tr, TestPageCounts);
   //RUN_TEST(tr, TestLooping);
-  //RUN_TEST(tr, TestModification);
+  RUN_TEST(tr, TestModification);
   //RUN_TEST(tr, TestPageSizes);
   //RUN_TEST(tr, TestConstContainer);
-  RUN_TEST(tr, TestPagePagination);
+  //RUN_TEST(tr, TestPagePagination);
 }
