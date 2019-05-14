@@ -107,7 +107,7 @@ void TestLooping() {
     }
     os << '\n';
   }
-  //cout << os.str() << endl;
+  
   ASSERT_EQUAL(os.str(), "1 2 3 4 5 6 \n7 8 9 10 11 12 \n13 14 15 \n");
 }
 
