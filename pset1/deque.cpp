@@ -9,6 +9,23 @@
 
 using namespace std;
 
+#define THROW_EXCEPTION \
+  if (index >= front_.size() + back_.size()) { \
+    throw out_of_range("Index is out of range"); \
+  }
+
+#define GET_INDEX \
+  if (index < front_.size()) { \
+    return front_[front_.size() - 1 - index]; \
+  } \
+  return back_[index - front_.size()];
+
+#define FRONT \
+  return front_.empty() ? back_.front() : front_.back();
+
+#define BACK \
+  return back_.empty() ? front_.front() : back_.back();
+
 template <typename T>
 class Deque {
 public:
@@ -23,50 +40,37 @@ public:
   }
 
   T& At(const size_t& index) {
-    if (index < front_.size()) {
-      return front_[front_.size() - 1 - index];
-    }
-
-    if (index - front_.size() < back_.size()) {
-      return back_[index - front_.size()];
-    }
-
-    throw out_of_range("Index is out of range");
+    THROW_EXCEPTION
+    GET_INDEX
   }
 
   const T& At(size_t index) const {
-    return const_cast<T&>(At(index));
+    THROW_EXCEPTION
+    GET_INDEX
   }
 
   T& operator[](size_t index) {
-    if (index < front_.size()) {
-      return front_[front_.size() - 1 - index];
-    }
-    return back_[index - front_.size()];
+    GET_INDEX
   }
 
   const T& operator[](size_t index) const {
-    return const_cast<T&>(At(index));
+    GET_INDEX
   }
 
   T& Front() {
-    return front_.empty()
-      ? back_.front()
-      : front_.back();
+    FRONT
   }
 
   const T& Front() const {
-    return const_cast<T&>(Front());
+    FRONT
   }
 
   T& Back() {
-    return back_.empty()
-      ? front_.front()
-      : back_.back();
+    BACK
   }
 
   const T& Back() const {
-    return const_cast<T&>(Back());
+    BACK
   }
 
   void PushFront(const T& value) {
@@ -81,7 +85,6 @@ private:
   vector<T> front_;
   vector<T> back_;
 };
-
 
 // Tests
 void testConstructor() {
