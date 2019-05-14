@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <cmath>
 #include <iterator>
 using namespace std;
 
@@ -22,11 +21,11 @@ public:
   , page_size(s)
   {}
 
-  Iterator begin() {
+  Iterator begin() const{
     return first;
   }
 
-  Iterator end() {
+  Iterator end() const {
     return last;
   }
 
@@ -96,7 +95,6 @@ void TestPageCounts() {
   ASSERT_EQUAL(Paginate(v1, 1).size(), 0u);
 }
 
-/*
 void TestLooping() {
   vector<int> v(15);
   iota(begin(v), end(v), 1);
@@ -109,9 +107,9 @@ void TestLooping() {
     }
     os << '\n';
   }
-
+  //cout << os.str() << endl;
   ASSERT_EQUAL(os.str(), "1 2 3 4 5 6 \n7 8 9 10 11 12 \n13 14 15 \n");
-}*/
+}
 
 void TestModification() {
   vector<string> vs = {"one", "two", "three", "four", "five"};
@@ -126,7 +124,7 @@ void TestModification() {
   ASSERT_EQUAL(vs, expected);
 }
 
-/*
+
 void TestPageSizes() {
   string letters(26, ' ');
 
@@ -151,15 +149,13 @@ void TestConstContainer() {
   const vector<string> expected = {"abcdefghij", "klmnopqrst", "uvwxyz"};
   ASSERT_EQUAL(pages, expected);
 }
-*/
-/*
+
 void TestPagePagination() {
   vector<int> v(22);
   iota(begin(v), end(v), 1);
 
   vector<vector<int>> lines;
   for (const auto& split_by_9 : Paginate(v, 9)) {
-    cout << split_by_9.size() << endl;
     for (const auto& split_by_4 : Paginate(split_by_9, 4)) {
       lines.push_back({});
       for (int item : split_by_4) {
@@ -179,14 +175,14 @@ void TestPagePagination() {
   };
   ASSERT_EQUAL(lines, expected);
 }
-*/
+
 
 int main() {
   TestRunner tr;
   RUN_TEST(tr, TestPageCounts);
-  //RUN_TEST(tr, TestLooping);
+  RUN_TEST(tr, TestLooping);
   RUN_TEST(tr, TestModification);
-  //RUN_TEST(tr, TestPageSizes);
-  //RUN_TEST(tr, TestConstContainer);
-  //RUN_TEST(tr, TestPagePagination);
+  RUN_TEST(tr, TestPageSizes);
+  RUN_TEST(tr, TestConstContainer);
+  RUN_TEST(tr, TestPagePagination);
 }
