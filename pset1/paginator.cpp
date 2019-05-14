@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
+#include <iterator>
 using namespace std;
 
 template <typename Iterator>
@@ -43,7 +45,12 @@ private:
   vector<Page<Iterator>> pages;
 
   void paginate() {
-
+    for (auto begin = first; begin < last; begin += page_size) {
+      auto end = begin + page_size > last ? last : begin + page_size;
+      pages.push_back(
+        { begin, end, static_cast<size_t>(distance(begin, end)) }
+      );
+    }
   }
 
 public:
@@ -64,8 +71,7 @@ public:
   }
 
   size_t size() const {
-    // return # of pages for Container begin/end
-    return 0;
+    return pages.size();
   }
 };
 
@@ -115,7 +121,8 @@ void TestModification() {
   const vector<string> expected = {"One", "Two", "Three", "Four", "Five"};
   ASSERT_EQUAL(vs, expected);
 }
-
+*/
+/*
 void TestPageSizes() {
   string letters(26, ' ');
 
@@ -140,7 +147,7 @@ void TestConstContainer() {
   const vector<string> expected = {"abcdefghij", "klmnopqrst", "uvwxyz"};
   ASSERT_EQUAL(pages, expected);
 }
-
+*/
 void TestPagePagination() {
   vector<int> v(22);
   iota(begin(v), end(v), 1);
@@ -166,13 +173,13 @@ void TestPagePagination() {
   };
   ASSERT_EQUAL(lines, expected);
 }
-*/
+
 int main() {
   TestRunner tr;
   RUN_TEST(tr, TestPageCounts);
   //RUN_TEST(tr, TestLooping);
   //RUN_TEST(tr, TestModification);
   //RUN_TEST(tr, TestPageSizes);
-//  RUN_TEST(tr, TestConstContainer);
-//  RUN_TEST(tr, TestPagePagination);
+  //RUN_TEST(tr, TestConstContainer);
+  RUN_TEST(tr, TestPagePagination);
 }
