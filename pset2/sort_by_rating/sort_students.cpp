@@ -1,15 +1,24 @@
 #include "student.h"
-#include "test_runner.h"
+//#include "test_runner.h"
+//#include "profile.h"
 
 #include <algorithm>
 
 using namespace std;
 
-//Оптимизируйте эту функцию
-bool Compare(Student first, Student second) {
+// Optimize this function
+/*
+bool CompareSlow(Student first, Student second) {
   return first.Less(second);
 }
+*/
 
+// Fast version:
+bool Compare(const Student& first, const Student& second) {
+  return first.rating > second.rating;
+}
+
+/*
 void TestComparison() {
   Student newbie {
     "Ivan", "Ivanov", {
@@ -55,9 +64,40 @@ void TestSorting() {
   );
 }
 
+void TestCompareFast() {
+  vector<Student> students;
+  for (int i = 1000000; i > 0; --i) {
+    students.push_back({"S","S", {{"maths", i}}, static_cast<double>(i)});
+  }
+  LOG_DURATION("Compare Fast");
+  sort(students.begin(), students.end(), Compare);
+  ASSERT(is_sorted(students.begin(), students.end(),
+    [](Student first, Student second) {
+      return first.Less(second);
+    })
+  );
+}
+
+void TestCompareSlow() {
+  vector<Student> students;
+  for (int i = 1000000; i > 0; --i) {
+    students.push_back({"S","S", {{"maths", i}}, static_cast<double>(i)});
+  }
+  LOG_DURATION("Compare Slow");
+  sort(students.begin(), students.end(), CompareSlow);
+  ASSERT(is_sorted(students.begin(), students.end(),
+    [](Student first, Student second) {
+      return first.Less(second);
+    })
+  );
+}
+
 int main() {
   TestRunner tr;
-  RUN_TEST(tr, TestComparison);
-  RUN_TEST(tr, TestSorting);
+    RUN_TEST(tr, TestComparison);
+    RUN_TEST(tr, TestSorting);
+    RUN_TEST(tr, TestCompareFast);
+    RUN_TEST(tr, TestCompareSlow);
   return 0;
 }
+*/
