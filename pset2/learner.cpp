@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <set>
 
 #include "test_runner.h"
 #include "profile.h"
@@ -11,39 +12,23 @@
 using namespace std;
 
 class Learner {
- private:
-  vector<string> dict;
+private:
+  set<string> dict;
 
- public:
+public:
+
   int Learn(const vector<string>& words) {
-    int newWords = 0;
-    for (const auto& word : words) {
-      if (find(dict.begin(), dict.end(), word) == dict.end()) {
-        ++newWords;
-        dict.push_back(word);
-      }
+    int counter = dict.size();
+    for (const string & w : words) {
+      dict.insert(w);
     }
-    return newWords;
+    return dict.size() - counter;
   }
 
   vector<string> KnownWords() {
-    sort(dict.begin(), dict.end());
-    dict.erase(unique(dict.begin(), dict.end()), dict.end());
-    return dict;
+    return {dict.begin(), dict.end()};
   }
 };
-
-/*
-Learner& createDictionary(Learner& learner) {
-  ifstream infile("words.txt");
-  string line;
-  while(getline(infile, line)) {
-    istringstream iss(line);
-    string word;
-    iss >> word;
-  }
-}
-*/
 
 void getWords(vector<string>& words) {
   ifstream infile("words_to_test.txt");
