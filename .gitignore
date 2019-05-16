@@ -12,3 +12,6 @@
 
 # Makefile
 **/Makefile
+
+# txt test files
+*.txt
