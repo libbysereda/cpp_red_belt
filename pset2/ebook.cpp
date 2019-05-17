@@ -3,12 +3,49 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <map>
 
 #include "test_runner.h"
 #include "profile.h"
 
 using namespace std;
 
+class ReadingManager {
+public:
+  ReadingManager()
+  : users_to_pages(MAX_USER_COUNT_ + 1, 0)
+  {};
+
+  void Read(int user_id, int page_count) {
+    users_to_pages[user_id] = page_count;
+    ++total_users;
+    pages_to_users[page_count] += 1;
+  }
+
+  double Cheer(int user_id) const {
+    const int page = users_to_pages[user_id];
+    if (page == 0) {
+      return 0;
+    }
+    if (total_users == 1) {
+      return 1;
+    }
+
+    auto pos = pages_to_users.lower_bound(page);
+    int counter = 0;
+    for (auto it = pages_to_users.begin(); it != pos; ++it) {
+      counter += it->second;
+    }
+    return counter * 1.0 / total_users - 1;
+  }
+
+private:
+  static const int MAX_USER_COUNT_ = 100'000;
+  map<int, int> pages_to_users;
+  vector<int> users_to_pages;
+  int total_users = 0;
+};
+/*
 class ReadingManager {
 public:
   ReadingManager()
@@ -47,7 +84,7 @@ public:
     // По умолчанию деление целочисленное, поэтому
     // нужно привести числитель к типу double.
     // Простой способ сделать это — умножить его на 1.0.
-    return (user_count - position) * 1.0 / (user_count - 1);
+
   }
 
 private:
@@ -78,7 +115,7 @@ private:
     swap(user_positions_[lhs_id], user_positions_[rhs_id]);
   }
 };
-
+*/
 vector<double> getResults(ReadingManager& manager,
                           vector<string>& queries,
                           vector<vector<int>> values)
@@ -118,7 +155,7 @@ void stressTestRead() {
   vector<vector<int>> values;
   ReadingManager manager;
 
-  for (int i = 1, j = 1; i <= 1000000; ++i) {
+  for (int i = 1, j = 1; i <= 100000; ++i) {
     if (j % 100 == 0) {
       ++j;
     }
