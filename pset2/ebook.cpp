@@ -2,6 +2,10 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <string>
+
+#include "test_runner.h"
+#include "profile.h"
 
 using namespace std;
 
@@ -52,7 +56,9 @@ private:
   // в данном случае константная.
   // Будь она публичной, к ней можно было бы обратиться снаружи
   // следующим образом: ReadingManager::MAX_USER_COUNT.
-  static const int MAX_USER_COUNT_ = 100'000;
+  //static const int MAX_USER_COUNT_ = 100'000;
+  //for stress test
+  static const int MAX_USER_COUNT_ = 100'000'000;
 
   vector<int> user_page_counts_;
   vector<int> sorted_users_;   // отсортированы по убыванию количества страниц
@@ -73,84 +79,83 @@ private:
   }
 };
 
-// write tests for ebook manager - check if manager works correct
-void testEbookManager() {
-  map<string, vector<int>> queries = {
-    "CHEER", {5},
-    "READ", {1, 10},
-    "CHEER", {1},
-    "READ", {2, 5},
-    "READ", {3, 7},
-    "CHEER", {2},
-    "CHEER", {3},
-    "READ", {3, 10},
-    "CHEER", {3},
-    "READ", {3, 11},
-    "CHEER", {3},
-    "CHEER", {1}
-  }
-
-  ios::sync_with_stdio(false);
-  cin.tie(nullptr);
-
-  ReadingManager manager;
-
-  int query_count = queries.size();
+vector<double> getResults(ReadingManager& manager,
+                          vector<string>& queries,
+                          vector<vector<int>> values)
+  {
   vector<double> result;
-  //cin >> query_count;
-
-  for (int query_id = 0; query_id < query_count; ++query_id) {
-    istringstream is;
-    string query_type;
-    is >> query_type;
-    int user_id;
-    is >> user_id;
+  for (int i = 0; i < queries.size(); ++i) {
+    string query_type = queries[i];
+    int user_id = values[i][0];
 
     if (query_type == "READ") {
-      int page_count;
-      is >> page_count;
+      int page_count = values[i][1];
       manager.Read(user_id, page_count);
     } else if (query_type == "CHEER") {
-      result.push_back(user_id);
-      //cout << setprecision(6) << manager.Cheer() << "\n";
+      result.push_back(manager.Cheer(user_id));
     }
   }
 
-  vector<double> expected = {0, 1, 0, 0.5, 0.5, 1, 0.5};
+  return result;
 }
 
-// write stress tests
-
-// profile on stress tests
-
-// optimize solution
-
-int main() {
-  // Для ускорения чтения данных отключается синхронизация
-  // cin и cout с stdio,
-  // а также выполняется отвязка cin от cout
-  ios::sync_with_stdio(false);
-  cin.tie(nullptr);
+void testEbookManager() {
+  vector<string> queries = {"CHEER", "READ", "CHEER", "READ", "READ",
+                            "CHEER", "CHEER", "READ", "CHEER", "READ",
+                            "CHEER", "CHEER"};
+  vector<vector<int>> values = {{5}, {1, 10}, {1}, {2, 5}, {3, 7}, {2},
+                                {3}, {3, 10}, {3}, {3, 11}, {3}, {1}};
 
   ReadingManager manager;
+  vector<double> result = getResults(manager, queries, values);
 
-  int query_count;
-  cin >> query_count;
+  vector<double> expected = {0, 1, 0, 0.5, 0.5, 1, 0.5};
+  ASSERT_EQUAL(result, expected);
+}
 
-  for (int query_id = 0; query_id < query_count; ++query_id) {
-    string query_type;
-    cin >> query_type;
-    int user_id;
-    cin >> user_id;
+void stressTestRead() {
+  vector<string> queries;
+  vector<vector<int>> values;
+  ReadingManager manager;
 
-    if (query_type == "READ") {
-      int page_count;
-      cin >> page_count;
-      manager.Read(user_id, page_count);
-    } else if (query_type == "CHEER") {
-      cout << setprecision(6) << manager.Cheer(user_id) << "\n";
+  for (int i = 1, j = 1; i <= 1000000; ++i) {
+    if (j % 100 == 0) {
+      ++j;
     }
+    queries.push_back("READ");
+    values.push_back({i});
   }
+
+  {
+    LOG_DURATION("Read");
+    vector<double> result = getResults(manager, queries, values);
+  }
+}
+
+void stressTestCheer() {
+  vector<string> queries;
+  vector<vector<int>> values;
+  ReadingManager manager;
+
+  for (int i = 1, j = 1; i <= 1000000; ++i) {
+    if (j % 100 == 0) {
+      ++j;
+    }
+    queries.push_back("CHEER");
+    values.push_back({i, j});
+  }
+
+  {
+    LOG_DURATION("Cheer");
+    vector<double> result = getResults(manager, queries, values);
+  }
+}
+
+int main() {
+  TestRunner tr;
+  RUN_TEST(tr, testEbookManager);
+  stressTestRead();
+  stressTestCheer();
 
   return 0;
 }
