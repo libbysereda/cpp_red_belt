@@ -10,7 +10,7 @@
 using namespace std;
 
 struct Event {
-  uint64_t time;
+  int64_t time;
   string hotel_name;
   unsigned int client_id;
   int room_count;
@@ -22,12 +22,17 @@ private:
   map<string, uint64_t> clients;
   map<string, uint64_t> rooms;
 
-  void Adjust(uint64_t current_time) {
+  void Adjust(int64_t current_time) {
     while (!events.empty()
-           && events.front().time < current_time - 86400)
+           && current_time - 86400 < events.front().time
+           && events.front().time <= current_time)
     {
       --clients[events.front().hotel_name];
       rooms[events.front().hotel_name] -= events.front().room_count;
+
+      Event it = events.front();
+        cout << it.time << " " << it.hotel_name << " " << it.client_id << " "
+             << it.room_count << endl;
       events.pop();
     }
   }
@@ -35,7 +40,7 @@ private:
 public:
   BookingManager() {}
 
-  void Book(uint64_t time, const string& hotel_name,
+  void Book(int64_t time, const string& hotel_name,
             unsigned int client_id, int room_count)
   {
     events.push({time, hotel_name, client_id, room_count});
@@ -43,18 +48,9 @@ public:
     rooms[hotel_name] += room_count;
 
     cout << "New booking: " << time << " " << hotel_name << " " << client_id << " " << room_count << endl;
-    cout << "Booking before adjusting: " << endl;
-    while (!events.empty()){
-      cout << events.front().time << " " << events.front().hotel_name << " " << events.front().client_id << " "
-           << events.front().room_count << endl;
-    }
+    cout << "Adjust: " << endl;
     Adjust(time);
-
-    cout << "Booking after adjusting: " << endl;
-    while (!events.empty()){
-      cout << events.front().time << " " << events.front().hotel_name << " " << events.front().client_id << " "
-           << events.front().room_count << endl;
-    }
+          cout << endl << endl;
   }
 
   uint64_t GetClients(const string& hotel_name) {
@@ -69,7 +65,7 @@ public:
 
 struct TestQuery {
   string query;
-  uint64_t time;
+  int64_t time;
   string hotel_name;
   unsigned int client_id;
   int room_count;
@@ -113,8 +109,8 @@ void stressTest() {
     if (j % 100 == 0) {
       ++j;
     }
-    queries.push_back({"BOOK", static_cast<uint64_t>(i), "Marriott", static_cast<unsigned int>(i), j});
-    queries.push_back({"BOOK", static_cast<uint64_t>(i), "FourSeasons", static_cast<unsigned int>(i), j});
+    queries.push_back({"BOOK", static_cast<int64_t>(i), "Marriott", static_cast<unsigned int>(i), j});
+    queries.push_back({"BOOK", static_cast<int64_t>(i), "FourSeasons", static_cast<unsigned int>(i), j});
   }
 
   BookingManager manager;
