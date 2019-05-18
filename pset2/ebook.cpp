@@ -4,8 +4,8 @@
 #include <utility>
 #include <string>
 
-//#include "test_runner.h"
-//#include "profile.h"
+#include "test_runner.h"
+#include "profile.h"
 
 using namespace std;
 
@@ -21,12 +21,10 @@ private:
 
   void updateRating(int page_number) {
     int user_count = 0;
-    for (size_t i = 1; i < page_number; ++i) {
+    for (size_t i = 0; i < page_number; ++i) {
       user_count += pages_to_users[i];
     }
-    if (total_users > 2) {
-        pages_rating[page_number] = user_count * 1.0 / (total_users - 1);
-    }
+    pages_rating[page_number] = user_count * 1.0 / (total_users - 1);
   }
 
 public:
@@ -45,7 +43,6 @@ public:
 
     users_to_pages[user_id] = page_number;
     ++pages_to_users[page_number];
-    updateRating(page_number);
   }
 
   double Cheer(int user_id) {
@@ -55,11 +52,11 @@ public:
     if (total_users == 1) {
       return 1;
     }
+    updateRating(users_to_pages[user_id]);
     return pages_rating[users_to_pages[user_id]];
   }
 };
 
-/*
 void testEbookManager() {
   vector<string> queries = {"CHEER", "READ", "CHEER", "READ", "READ",
                             "CHEER", "CHEER", "READ", "CHEER", "READ",
@@ -130,11 +127,37 @@ void stressTestCheer() {
 }
 
 int main() {
+  // tests
   TestRunner tr;
   RUN_TEST(tr, testEbookManager);
   stressTestRead();
   stressTestCheer();
 
+  // Для ускорения чтения данных отключается синхронизация
+  // cin и cout с stdio,
+  // а также выполняется отвязка cin от cout
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
+  ReadingManager manager;
+
+  int query_count;
+  cin >> query_count;
+
+  for (int query_id = 0; query_id < query_count; ++query_id) {
+    string query_type;
+    cin >> query_type;
+    int user_id;
+    cin >> user_id;
+
+    if (query_type == "READ") {
+      int page_count;
+      cin >> page_count;
+      manager.Read(user_id, page_count);
+    } else if (query_type == "CHEER") {
+      cout << setprecision(6) << manager.Cheer(user_id) << "\n";
+    }
+  }
+
   return 0;
 }
-*/
