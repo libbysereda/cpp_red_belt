@@ -73,58 +73,6 @@ private:
   }
 };
 
-// write tests for ebook manager - check if manager works correct
-void testEbookManager() {
-  map<string, vector<int>> queries = {
-    "CHEER", {5},
-    "READ", {1, 10},
-    "CHEER", {1},
-    "READ", {2, 5},
-    "READ", {3, 7},
-    "CHEER", {2},
-    "CHEER", {3},
-    "READ", {3, 10},
-    "CHEER", {3},
-    "READ", {3, 11},
-    "CHEER", {3},
-    "CHEER", {1}
-  }
-
-  ios::sync_with_stdio(false);
-  cin.tie(nullptr);
-
-  ReadingManager manager;
-
-  int query_count = queries.size();
-  vector<double> result;
-  //cin >> query_count;
-
-  for (int query_id = 0; query_id < query_count; ++query_id) {
-    istringstream is;
-    string query_type;
-    is >> query_type;
-    int user_id;
-    is >> user_id;
-
-    if (query_type == "READ") {
-      int page_count;
-      is >> page_count;
-      manager.Read(user_id, page_count);
-    } else if (query_type == "CHEER") {
-      result.push_back(user_id);
-      //cout << setprecision(6) << manager.Cheer() << "\n";
-    }
-  }
-
-  vector<double> expected = {0, 1, 0, 0.5, 0.5, 1, 0.5};
-}
-
-// write stress tests
-
-// profile on stress tests
-
-// optimize solution
-
 int main() {
   // Для ускорения чтения данных отключается синхронизация
   // cin и cout с stdio,
