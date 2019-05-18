@@ -3,10 +3,9 @@
 #include <vector>
 #include <utility>
 #include <string>
-#include <map>
 
-#include "test_runner.h"
-#include "profile.h"
+//#include "test_runner.h"
+//#include "profile.h"
 
 using namespace std;
 
@@ -60,6 +59,7 @@ public:
   }
 };
 
+/*
 void testEbookManager() {
   vector<string> queries = {"CHEER", "READ", "CHEER", "READ", "READ",
                             "CHEER", "CHEER", "READ", "CHEER", "READ",
@@ -137,3 +137,4 @@ int main() {
 
   return 0;
 }
+*/
