@@ -218,11 +218,11 @@ void stressTest() {
 }
 
 int main() {
-  //TestRunner tr;
-  //RUN_TEST(tr, testBookingManager);
-  //RUN_TEST(tr, testRooms);
-  //RUN_TEST(tr, testClients);
-  //stressTest();
+  TestRunner tr;
+  RUN_TEST(tr, testBookingManager);
+  RUN_TEST(tr, testRooms);
+  RUN_TEST(tr, testClients);
+  stressTest();
 
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
