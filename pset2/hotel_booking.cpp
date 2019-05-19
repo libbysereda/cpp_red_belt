@@ -16,6 +16,10 @@ struct Event {
   int room_count;
 };
 
+struct Booking {
+
+}
+
 class BookingManager {
 private:
   queue<Event> events;
@@ -24,15 +28,14 @@ private:
 
   void Adjust(int64_t current_time) {
     while (!events.empty()
-           && current_time - 86400 < events.front().time
-           && events.front().time <= current_time)
+           && events.front().time + 86400 <= current_time)
     {
       --clients[events.front().hotel_name];
       rooms[events.front().hotel_name] -= events.front().room_count;
 
-      Event it = events.front();
-        cout << it.time << " " << it.hotel_name << " " << it.client_id << " "
-             << it.room_count << endl;
+      //Event it = events.front();
+      //  cout << it.time << " " << it.hotel_name << " " << it.client_id << " "
+      //       << it.room_count << endl;
       events.pop();
     }
   }
@@ -47,8 +50,8 @@ public:
     ++clients[hotel_name];
     rooms[hotel_name] += room_count;
 
-    cout << "New booking: " << time << " " << hotel_name << " " << client_id << " " << room_count << endl;
-    cout << "Adjust: " << endl;
+    //cout << "New booking: " << time << " " << hotel_name << " " << client_id << " " << room_count << endl;
+    //cout << "Adjust: " << endl;
     Adjust(time);
           cout << endl << endl;
   }
@@ -103,14 +106,85 @@ void testBookingManager() {
   ASSERT_EQUAL(result, expected);
 }
 
+void testRooms() {
+  {
+    vector<Event> queries;
+    BookingManager manager;
+
+    for (int i = 0; i < 10; ++i) {
+      queries.push_back({static_cast<int64_t>(i), "Marriott", 1, 2});
+      queries.push_back({static_cast<int64_t>(i), "FourSeasons", static_cast<unsigned int>(i), 2});
+    }
+
+    for (const auto& q : queries) {
+      manager.Book(q.time, q.hotel_name, q.client_id, q.room_count);
+    }
+
+    ASSERT_EQUAL(manager.GetRooms("Marriott"), 20);
+    ASSERT_EQUAL(manager.GetRooms("FourSeasons"), 20);
+  }
+  {
+    vector<Event> queries;
+    BookingManager manager;
+
+    for (int i = 0; i < 86500; ++i) {
+      queries.push_back({static_cast<int64_t>(i), "Marriott", 1, 1});
+      queries.push_back({static_cast<int64_t>(i), "FourSeasons", static_cast<unsigned int>(i), 1});
+    }
+
+    for (const auto& q : queries) {
+      manager.Book(q.time, q.hotel_name, q.client_id, q.room_count);
+    }
+
+    ASSERT_EQUAL(manager.GetRooms("Marriott"), 86400);
+    ASSERT_EQUAL(manager.GetRooms("FourSeasons"), 86400);
+  }
+}
+
+void testClients() {
+  {
+    vector<Event> queries;
+    BookingManager manager;
+
+    for (int i = 0; i < 10; ++i) {
+      queries.push_back({static_cast<int64_t>(i), "Marriott", 1, 2});
+      queries.push_back({static_cast<int64_t>(i), "FourSeasons", static_cast<unsigned int>(i), 2});
+    }
+
+    for (const auto& q : queries) {
+      manager.Book(q.time, q.hotel_name, q.client_id, q.room_count);
+    }
+
+    ASSERT_EQUAL(manager.GetClients("Marriott"), 1);
+    ASSERT_EQUAL(manager.GetClients("FourSeasons"), 10);
+  }
+  {
+    vector<Event> queries;
+    BookingManager manager;
+
+    for (int i = 0; i < 86500; ++i) {
+      queries.push_back({static_cast<int64_t>(i), "Marriott", 1, 1});
+      queries.push_back({static_cast<int64_t>(i), "FourSeasons", 1, 1});
+    }
+
+    for (const auto& q : queries) {
+      manager.Book(q.time, q.hotel_name, q.client_id, q.room_count);
+    }
+
+    ASSERT_EQUAL(manager.GetClients("Marriott"), 1);
+    ASSERT_EQUAL(manager.GetClients("FourSeasons"), 1);
+  }
+
+}
+
 void stressTest() {
-  vector<TestQuery> queries;
+  vector<Event> queries;
   for (int i = 0, j = 0; i < 100000; ++i) {
     if (j % 100 == 0) {
       ++j;
     }
-    queries.push_back({"BOOK", static_cast<int64_t>(i), "Marriott", static_cast<unsigned int>(i), j});
-    queries.push_back({"BOOK", static_cast<int64_t>(i), "FourSeasons", static_cast<unsigned int>(i), j});
+    queries.push_back({static_cast<int64_t>(i), "Marriott", static_cast<unsigned int>(i), j});
+    queries.push_back({static_cast<int64_t>(i), "FourSeasons", static_cast<unsigned int>(i), j});
   }
 
   BookingManager manager;
@@ -121,10 +195,10 @@ void stressTest() {
     }
   }
 
-  vector<TestQuery> queries1;
+  vector<Event> queries1;
   for (int i = 0; i < 50000; ++i) {
-    queries1.push_back({"CLIENTS", 0, "Marriott", 0, 0});
-    queries1.push_back({"CLIENTS", 0, "FourSeasons", 0, 0});
+    queries1.push_back({0, "Marriott", 0, 0});
+    queries1.push_back({0, "FourSeasons", 0, 0});
   }
 
   {
@@ -151,6 +225,8 @@ void stressTest() {
 int main() {
   TestRunner tr;
   RUN_TEST(tr, testBookingManager);
+  //RUN_TEST(tr, testRooms);
+  //RUN_TEST(tr, testClients);
   //stressTest();
 
   ios::sync_with_stdio(false);
