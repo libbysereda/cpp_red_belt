@@ -16,26 +16,24 @@ struct Event {
   int room_count;
 };
 
-struct Booking {
-
-}
-
 class BookingManager {
 private:
   queue<Event> events;
-  map<string, uint64_t> clients;
+  map<string, map<uint64_t, uint64_t>> clients;
   map<string, uint64_t> rooms;
 
   void Adjust(int64_t current_time) {
     while (!events.empty()
            && events.front().time + 86400 <= current_time)
     {
-      --clients[events.front().hotel_name];
-      rooms[events.front().hotel_name] -= events.front().room_count;
+      auto it = events.front();
+      clients[it.hotel_name][it.client_id] -= it.room_count;
+      if (clients[it.hotel_name][it.client_id] == 0) {
+        clients[it.hotel_name].erase(it.client_id);
+      }
 
-      //Event it = events.front();
-      //  cout << it.time << " " << it.hotel_name << " " << it.client_id << " "
-      //       << it.room_count << endl;
+      rooms[it.hotel_name] -= it.room_count;
+
       events.pop();
     }
   }
@@ -47,17 +45,14 @@ public:
             unsigned int client_id, int room_count)
   {
     events.push({time, hotel_name, client_id, room_count});
-    ++clients[hotel_name];
+    clients[hotel_name][client_id] += room_count;
     rooms[hotel_name] += room_count;
 
-    //cout << "New booking: " << time << " " << hotel_name << " " << client_id << " " << room_count << endl;
-    //cout << "Adjust: " << endl;
     Adjust(time);
-          cout << endl << endl;
   }
 
   uint64_t GetClients(const string& hotel_name) {
-    return clients[hotel_name];
+    return clients[hotel_name].size();
   }
 
   uint64_t GetRooms(const string& hotel_name) {
@@ -163,8 +158,8 @@ void testClients() {
     BookingManager manager;
 
     for (int i = 0; i < 86500; ++i) {
-      queries.push_back({static_cast<int64_t>(i), "Marriott", 1, 1});
-      queries.push_back({static_cast<int64_t>(i), "FourSeasons", 1, 1});
+       queries.push_back({static_cast<int64_t>(i), "Marriott", 1, 1});
+       queries.push_back({static_cast<int64_t>(i), "FourSeasons", 1, 1});
     }
 
     for (const auto& q : queries) {
@@ -223,8 +218,8 @@ void stressTest() {
 }
 
 int main() {
-  TestRunner tr;
-  RUN_TEST(tr, testBookingManager);
+  //TestRunner tr;
+  //RUN_TEST(tr, testBookingManager);
   //RUN_TEST(tr, testRooms);
   //RUN_TEST(tr, testClients);
   //stressTest();
