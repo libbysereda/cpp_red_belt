@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <iostream>
-using namespace std;
 
 // Реализуйте шаблон SimpleVector
 template <typename T>
