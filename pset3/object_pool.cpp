@@ -11,15 +11,56 @@ using namespace std;
 template <class T>
 class ObjectPool {
 public:
-  T* Allocate();
-  T* TryAllocate();
+  T* Allocate() {
+    if (deallocated_objects.empty()) {
+      T* new_object = new T;
+      allocated_objects.insert(new_object);
+      return new_object;
+    }
 
-  void Deallocate(T* object);
+    return AllocateObject();
+  }
 
-  ~ObjectPool();
+  T* TryAllocate() {
+    if (deallocated_objects.empty()) {
+      return nullptr;
+    }
+
+    return AllocateObject();
+  }
+
+  void Deallocate(T* object) {
+    if (allocated_objects.find(object) != allocated_objects.end()) {
+      allocated_objects.erase(object);
+      deallocated_objects.push(object);
+    } else {
+      throw invalid_argument("Object not found");
+    }
+  }
+
+  ~ObjectPool() {
+    for (T* o : allocated_objects) {
+      delete o;
+    }
+
+    allocated_objects.erase(allocated_objects.begin(), allocated_objects.end());
+
+    while (!deallocated_objects.empty()) {
+      delete deallocated_objects.front();
+      deallocated_objects.pop();
+    }
+  }
 
 private:
-  // Добавьте сюда поля
+  set<T*> allocated_objects;
+  queue<T*> deallocated_objects;
+
+  T* AllocateObject() {
+    T* object = deallocated_objects.front();
+    deallocated_objects.pop();
+    allocated_objects.insert(object);
+    return object;
+  }
 };
 
 void TestObjectPool() {
@@ -42,6 +83,14 @@ void TestObjectPool() {
   ASSERT_EQUAL(*pool.Allocate(), "first");
 
   pool.Deallocate(p1);
+
+  // test exception
+  string* p4 = new string("fourth");
+  try {
+    pool.Deallocate(p4);
+  } catch (const invalid_argument& ia) {
+    ASSERT_EQUAL(ia.what(), string("Object not found"));
+  }
 }
 
 int main() {
