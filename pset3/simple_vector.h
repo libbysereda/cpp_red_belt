@@ -86,27 +86,4 @@ size_t SimpleVector<T>::Capacity() const {
 }
 
 template <typename T>
-void SimpleVector<T>::PushBack(const T& value) {
-  if (Size() == 0) {
-    size_ = capacity_ = 1;
-    data_ = new T[size_];
-    end_ = data_ + size_;
-    data_[cur_index++] = value;
-  } else {
-      if (Size() == Capacity()) {
-        T* old_data = data_;
-        capacity_ *= 2;
-        data_ = new T[capacity_];
-
-        for (size_t i = 0; i < Size(); ++i) {
-          data_[i] = old_data[i];
-        }
-
-        delete[] old_data;
-      }
-
-      data_[cur_index++] = value;
-      size_++;
-      end_ = data_ + size_;
-  }
-}
+void SimpleVector<T>::PushBack(const T& value) {}

@@ -66,7 +66,6 @@ void TestPushBack() {
     ASSERT_EQUAL(v.Size(), 5u);
     ASSERT_EQUAL(expected, expected_for);
   }
-  /*
   {
     SimpleVector<int> v(5);
     for (int i = 0; i < v.Size(); ++i) {
@@ -82,8 +81,8 @@ void TestPushBack() {
 
     ASSERT_EQUAL(v.Size(), 5u);
     ASSERT_EQUAL(expected, expected_for);
-  } */
-  { /*
+  }
+  {
     SimpleVector<int> v;
     for (int i = 10; i >= 1; --i) {
       v.PushBack(i);
@@ -94,7 +93,6 @@ void TestPushBack() {
     const vector<int> expected = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     ASSERT_EQUAL(v.Size(), expected.size());
     ASSERT(equal(begin(v), end(v), begin(expected)));
-    */
   }
 }
 
