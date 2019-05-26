@@ -57,23 +57,7 @@ void TestPushBack() {
     }
 
     vector<int> expected_for;
-    for (auto& i : v) {
-      expected_for.push_back(i);
-    }
-
-    vector<int> expected = {0, 1, 2, 3, 4};
-
-    ASSERT_EQUAL(v.Size(), 5u);
-    ASSERT_EQUAL(expected, expected_for);
-  }
-  {
-    SimpleVector<int> v(5);
-    for (int i = 0; i < v.Size(); ++i) {
-      v.PushBack(i);
-    }
-
-    vector<int> expected_for;
-    for (auto& i : v) {
+    for (const auto& i : v) {
       expected_for.push_back(i);
     }
 
