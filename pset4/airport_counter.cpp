@@ -13,45 +13,89 @@ using namespace std;
 template <typename TAirport>
 class AirportCounter {
 public:
-  // конструктор по умолчанию: список элементов пока пуст
-  AirportCounter();
+  // default constructor
+  AirportCounter() {
+    fillDefaultValues();
+  }
 
-  // конструктор от диапазона элементов типа TAirport
+  // constructor from range of elements type TAirport
   template <typename TIterator>
-  AirportCounter(TIterator begin, TIterator end);
+  AirportCounter(TIterator begin, TIterator end) {
+    fillDefaultValues();
+    for (auto it = begin; it != end; ++it) {
+      airports[static_cast<size_t>(*it)]++;
+    }
+  }
 
-  // получить количество элементов, равных данному
-  size_t Get(TAirport airport) const;
+  // get number of departures for current airport
+  size_t Get(TAirport airport) const {
+    return airports[static_cast<size_t>(airport)];
+  }
 
-  // добавить данный элемент
-  void Insert(TAirport airport);
+  // add new departure for current airport
+  void Insert(TAirport airport) {
+    airports[static_cast<size_t>(airport)]++;
+  }
 
-  // удалить одно вхождение данного элемента
-  void EraseOne(TAirport airport);
+  // delete departure for current airport
+  void EraseOne(TAirport airport) {
+    airports[static_cast<size_t>(airport)]--;
+  }
 
-  // удалить все вхождения данного элемента
-  void EraseAll(TAirport airport);
+  // delete all departures for current airport
+  void EraseAll(TAirport airport) {
+    airports[static_cast<size_t>(airport)] = 0;
+  }
 
   using Item = pair<TAirport, size_t>;
-  using Items = /* ??? */;
+  using Items = array<Item, static_cast<uint32_t>(TAirport::Last_)>/* ??? */;
 
-  // получить некоторый объект, по которому можно проитерироваться,
-  // получив набор объектов типа Item - пар (аэропорт, количество),
-  // упорядоченных по аэропорту
-  Items GetItems() const;
+  // get some itirate object with objects type Item - pair<airport, departure counter>
+  // ordered by airport
+
+  Items GetItems() const {
+    Items items;
+    for (size_t i = 0; i < airports.size(); ++i) {
+      Item p = {static_cast<TAirport>(i), airports[i]};
+      items[i] = p;
+    }
+    return items;
+  }
 
 private:
-  // ???
+  array<size_t, static_cast<uint32_t>(TAirport::Last_)> airports;
+
+  void fillDefaultValues() {
+    airports.fill(0);
+  }
 };
 
+enum class MoscowAirport {
+  VKO,
+  SVO,
+  DME,
+  ZIA,
+  Last_
+};
+
+void TestDefaultConstructor() {
+  AirportCounter<MoscowAirport> airport_counter;
+  airport_counter.Insert(MoscowAirport::VKO);
+  ASSERT_EQUAL(airport_counter.Get(MoscowAirport::VKO), 1);
+  ASSERT_EQUAL(airport_counter.Get(MoscowAirport::SVO), 0);
+
+  airport_counter.Insert(MoscowAirport::VKO);
+  ASSERT_EQUAL(airport_counter.Get(MoscowAirport::VKO), 2);
+
+  airport_counter.EraseOne(MoscowAirport::VKO);
+  ASSERT_EQUAL(airport_counter.Get(MoscowAirport::VKO), 1);
+
+  airport_counter.EraseAll(MoscowAirport::VKO);
+  ASSERT_EQUAL(airport_counter.Get(MoscowAirport::VKO), 0);
+}
+
+
 void TestMoscow() {
-  enum class MoscowAirport {
-    VKO,
-    SVO,
-    DME,
-    ZIA,
-    Last_
-  };
 
   const vector<MoscowAirport> airports = {
       MoscowAirport::SVO,
@@ -92,6 +136,7 @@ void TestMoscow() {
 
   airport_counter.EraseAll(MoscowAirport::VKO);
   ASSERT_EQUAL(airport_counter.Get(MoscowAirport::VKO), 0);
+
 }
 
 enum class SmallCountryAirports {
@@ -198,17 +243,14 @@ void TestMostPopularAirport() {
   }));
 }
 
+
 int main() {
   TestRunner tr;
 
-  // По условию, суммарное время работы всех тестов не должно превышать
-  // двух секунд. Если ваше время будет лишь чуть больше двух секунд,
-  // попробуйте отправить ваше решение в тестирующую систему. Возможно,
-  // там более мощное железо, и ваше решение будет принято.
-
-  // Кроме того, не забудьте включить оптимизации при компиляции кода.
+  // Time limit for all tests: 2 seconds. You can use optimization flag -O2 
 
   LOG_DURATION("Total tests duration");
+  RUN_TEST(tr, TestDefaultConstructor);
   RUN_TEST(tr, TestMoscow);
   RUN_TEST(tr, TestManyConstructions);
   RUN_TEST(tr, TestManyGetItems);
