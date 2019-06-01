@@ -50,7 +50,7 @@ public:
   using Item = pair<TAirport, size_t>;
   using Items = array<Item, static_cast<uint32_t>(TAirport::Last_)>/* ??? */;
 
-  // get some itirate object with objects type Item - pair<airport, departure counter>
+  // get some iterable object with objects type Item - pair<airport, departure counter>
   // ordered by airport
 
   Items GetItems() const {
@@ -247,7 +247,7 @@ void TestMostPopularAirport() {
 int main() {
   TestRunner tr;
 
-  // Time limit for all tests: 2 seconds. You can use optimization flag -O2 
+  // Time limit for all tests: 2 seconds. You can use optimization flag -O2
 
   LOG_DURATION("Total tests duration");
   RUN_TEST(tr, TestDefaultConstructor);
