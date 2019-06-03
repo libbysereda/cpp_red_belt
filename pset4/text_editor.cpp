@@ -47,7 +47,7 @@ void Editor::Left() {
 
 void Editor::Right() {
   if (cursor_pos != text.end()) {
-    cursor_pos++;
+    ++cursor_pos;
   }
 }
 
@@ -56,28 +56,10 @@ void Editor::Insert(char token) {
 }
 
 void Editor::Cut(size_t tokens) {
-  //buffer.clear();
-    /*
-  cout << "cursor: " << *cursor_pos << endl;
-  if (MovePosition(tokens) == text.end()) {
-    cout << "end: " << *(MovePosition(tokens)) << endl;
-  }
-  cout << text.size() << endl;*/
-  cout << "text before cut: ";
-  for (auto it = text.begin(); it != text.end(); ++it) {
-    cout << *it << ' ';
-  }
-  cout << endl;
-  buffer.splice(buffer.begin(), text, cursor_pos, MovePosition(tokens));
-  cout << "buffer: ";
-for (auto it = buffer.begin(); it != buffer.end(); ++it) {
-  cout << *it << ' ';
-}
-cout << endl << "text after cut: ";
-for (auto it = text.begin(); it != text.end(); ++it) {
-  cout << *it << ' ';
-}
-cout << endl << endl;
+  buffer.clear();
+  auto it = MovePosition(tokens);
+  buffer.splice(buffer.begin(), text, cursor_pos, it);
+  cursor_pos = it;
 }
 
 void Editor::Copy(size_t tokens) {
@@ -369,18 +351,18 @@ void StressTestLeftRight() {
 
 int main() {
   TestRunner tr;
-  //RUN_TEST(tr, TestCopyPaste);
+  RUN_TEST(tr, TestCopyPaste);
   RUN_TEST(tr, TestDefault);
-  //RUN_TEST(tr, TestEditing);
-  //RUN_TEST(tr, TestReverse);
-  //RUN_TEST(tr, TestNoText);
-  //RUN_TEST(tr, TestEmptyBuffer);
+  RUN_TEST(tr, TestEditing);
+  RUN_TEST(tr, TestReverse);
+  RUN_TEST(tr, TestNoText);
+  RUN_TEST(tr, TestEmptyBuffer);
 
-  //StressTestInsertGet();
-  //StressTestCutPaste();
-  //StressTestCut();
-  //StressTestCopy();
-  //StressTestLeftRight();
+  StressTestInsertGet();
+  StressTestCutPaste();
+  StressTestCut();
+  StressTestCopy();
+  StressTestLeftRight();
 
   return 0;
 }
