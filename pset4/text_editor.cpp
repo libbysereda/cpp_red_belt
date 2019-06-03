@@ -22,9 +22,22 @@ private:
   list<char> text;
   list<char>::iterator cursor_pos = text.begin();
   list<char> buffer;
+
+  auto MovePosition(size_t tokens = 1);
 };
 
 Editor::Editor() {}
+
+auto Editor::MovePosition(size_t tokens) {
+  auto move_pos = cursor_pos;
+  for (int i = 0; i < tokens; ++i) {
+    if (move_pos == text.end()) {
+      break;
+    }
+    ++move_pos;
+  }
+  return move_pos;
+}
 
 void Editor::Left() {
   if (cursor_pos != text.begin()) {
@@ -43,28 +56,36 @@ void Editor::Insert(char token) {
 }
 
 void Editor::Cut(size_t tokens) {
-  // try splice
-  buffer.clear();
-  if (!text.empty()) {
-    auto end = cursor_pos;
-    advance(end, tokens);
-    buffer.assign(cursor_pos, end);
-    text.erase(next(cursor_pos), end);
+  //buffer.clear();
+    /*
+  cout << "cursor: " << *cursor_pos << endl;
+  if (MovePosition(tokens) == text.end()) {
+    cout << "end: " << *(MovePosition(tokens)) << endl;
   }
+  cout << text.size() << endl;*/
+  cout << "text before cut: ";
+  for (auto it = text.begin(); it != text.end(); ++it) {
+    cout << *it << ' ';
+  }
+  cout << endl;
+  buffer.splice(buffer.begin(), text, cursor_pos, MovePosition(tokens));
+  cout << "buffer: ";
+for (auto it = buffer.begin(); it != buffer.end(); ++it) {
+  cout << *it << ' ';
+}
+cout << endl << "text after cut: ";
+for (auto it = text.begin(); it != text.end(); ++it) {
+  cout << *it << ' ';
+}
+cout << endl << endl;
 }
 
 void Editor::Copy(size_t tokens) {
-  // try splice
-  buffer.clear();
-  if (!text.empty()) {
-    auto end = cursor_pos;
-    advance(end, tokens);
-    buffer.assign(cursor_pos, end);
-  }
+  buffer.assign(cursor_pos, MovePosition(tokens));
 }
 
 void Editor::Paste() {
-
+  text.insert(cursor_pos, buffer.begin(), buffer.end());
 }
 
 string Editor::GetText() const {
@@ -83,10 +104,52 @@ void TypeText(Editor& editor, const string& text) {
   }
 }
 
+void TestCopyPaste() {
+  Editor editor;
+  const size_t text_len = 12;
+  TypeText(editor, "hello, world");
+
+  for(size_t i = 0; i < text_len; ++i) {
+    editor.Left();
+  }
+
+  editor.Copy(5);
+  editor.Paste();
+
+  ASSERT_EQUAL(editor.GetText(), "hellohello, world");
+
+  editor.Copy(0);
+  editor.Paste();
+
+  ASSERT_EQUAL(editor.GetText(), "hellohello, world");
+
+  editor.Copy(14);
+  editor.Paste();
+  ASSERT_EQUAL(editor.GetText(), "hellohello, worldhello, world");
+
+  editor.Copy();
+  editor.Paste();
+  ASSERT_EQUAL(editor.GetText(), "hellohello, worldhhello, world");
+
+  editor.Paste();
+  ASSERT_EQUAL(editor.GetText(), "hellohello, worldhhhello, world");
+
+  for (const char c : editor.GetText()) {
+    editor.Right();
+  }
+
+  editor.Copy();
+  editor.Paste();
+  ASSERT_EQUAL(editor.GetText(), "hellohello, worldhhhello, world");
+
+  editor.Insert('!');
+  editor.Paste();
+  ASSERT_EQUAL(editor.GetText(), "hellohello, worldhhhello, world!");
+}
+
 void TestEditing() {
   {
     Editor editor;
-
     const size_t text_len = 12;
     const size_t first_part_len = 7;
     TypeText(editor, "hello, world");
@@ -306,17 +369,18 @@ void StressTestLeftRight() {
 
 int main() {
   TestRunner tr;
+  //RUN_TEST(tr, TestCopyPaste);
   RUN_TEST(tr, TestDefault);
-  RUN_TEST(tr, TestEditing);
-  RUN_TEST(tr, TestReverse);
-  RUN_TEST(tr, TestNoText);
-  RUN_TEST(tr, TestEmptyBuffer);
+  //RUN_TEST(tr, TestEditing);
+  //RUN_TEST(tr, TestReverse);
+  //RUN_TEST(tr, TestNoText);
+  //RUN_TEST(tr, TestEmptyBuffer);
 
-  StressTestInsertGet();
-  StressTestCutPaste();
-  StressTestCut();
-  StressTestCopy();
-  StressTestLeftRight();
+  //StressTestInsertGet();
+  //StressTestCutPaste();
+  //StressTestCut();
+  //StressTestCopy();
+  //StressTestLeftRight();
 
   return 0;
 }
