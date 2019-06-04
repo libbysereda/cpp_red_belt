@@ -1,4 +1,5 @@
 #include "test_runner.h"
+#include "profile.h"
 #include "http_request.h"
 #include "stats.h"
 
