@@ -1,7 +1,5 @@
 #include "stats.h"
 
-using namespace std;
-
 Stats::Stats() {
   methods = {
     {"GET", 0},
@@ -49,13 +47,20 @@ HttpRequest ParseRequest(string_view line) {
   HttpRequest request;
 
   size_t pos = 0;
-  size_t delimiter = line.find(' ', pos);
+  while (line[pos] == ' ' && pos != line.npos) {
+    ++pos;
+  }
+  line.remove_prefix(pos);
 
-  request.method = line.substr(pos, delimiter);
+  size_t delimiter = line.find(' ');
+  request.method = line.substr(0, delimiter);
 
-  pos = delimiter + 1;
-  delimiter = line.find(' ', pos);
+  line.remove_prefix(++delimiter);
+  delimiter = line.find(' ');
+  request.uri = line.substr(0, delimiter);
 
-  request.uri = line.substr(pos, delimiter);
-  request.protocol = line.substr(++delimiter);
+  line.remove_prefix(++delimiter);
+  request.protocol = line;
+
+  return request;
 }
