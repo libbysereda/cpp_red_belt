@@ -4,26 +4,36 @@
 #include <iterator>
 #include <numeric>
 #include <vector>
+#include <list>
 
 using namespace std;
 
+template <typename It, typename Container>
+It findNext(It cur_pos, Container& c) {
+  return cur_pos == c.end() ? c.begin() : cur_pos;
+}
+
 template <typename RandomIt>
 void MakeJosephusPermutation(RandomIt first, RandomIt last, uint32_t step_size) {
-
-
-  vector<typename RandomIt::value_type> pool;
+  list<typename RandomIt::value_type> pool;
   for (auto it = first; it != last; ++it) {
     pool.push_back(move(*it));
   }
 
-  size_t cur_pos = 0;
+  auto cur_pos = pool.begin();
   while (!pool.empty()) {
-    *(first++) = move(pool[cur_pos]);
-    pool.erase(pool.begin() + cur_pos);
-    if (pool.empty()) {
+    *(first++) = move(*cur_pos);
+    auto next_pos = findNext(next(cur_pos), pool);
+
+    if (pool.size() == 1) {
       break;
     }
-    cur_pos = (cur_pos + step_size - 1) % pool.size();
+
+    pool.erase(cur_pos);
+    cur_pos = next_pos;
+    for (uint32_t i = 0; i < step_size - 1; ++i) {
+      cur_pos = findNext(next(cur_pos), pool);
+    }
   }
 }
 
@@ -67,10 +77,14 @@ bool operator == (const NoncopyableInt& lhs, const NoncopyableInt& rhs) {
   return lhs.value == rhs.value;
 }
 
+bool operator != (const NoncopyableInt& lhs, const NoncopyableInt& rhs) {
+  return lhs.value != rhs.value;
+}
+
 ostream& operator << (ostream& os, const NoncopyableInt& v) {
   return os << v.value;
 }
-/*
+
 void TestAvoidsCopying() {
   vector<NoncopyableInt> numbers;
   numbers.push_back({1});
@@ -90,10 +104,10 @@ void TestAvoidsCopying() {
 
   ASSERT_EQUAL(numbers, expected);
 }
-*/
+
 int main() {
   TestRunner tr;
   RUN_TEST(tr, TestIntVector);
-  //RUN_TEST(tr, TestAvoidsCopying);
+  RUN_TEST(tr, TestAvoidsCopying);
   return 0;
 }
