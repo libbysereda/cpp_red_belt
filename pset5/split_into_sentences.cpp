@@ -29,6 +29,10 @@ struct TestToken {
   bool operator==(const TestToken& other) const {
     return data == other.data && is_end_sentence_punctuation == other.is_end_sentence_punctuation;
   }
+
+  bool operator!=(const TestToken& other) const {
+    return data != other.data && is_end_sentence_punctuation == other.is_end_sentence_punctuation;
+  }
 };
 
 ostream& operator<<(ostream& stream, const TestToken& token) {
