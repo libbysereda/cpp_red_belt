@@ -15,9 +15,32 @@ using Sentence = vector<Token>;
 // Класс Token имеет метод bool IsEndSentencePunctuation() const
 template <typename Token>
 vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {
-  // Напишите реализацию функции, не копируя объекты типа Token
-}
+  vector<Sentence<Token>> sentences;
+  Sentence<Token> sentence;
+  bool isSentenceEnd = false;
+  auto it = tokens.begin();
 
+  while (it != tokens.end()) {
+
+    if ((*it).IsEndSentencePunctuation()) {
+      isSentenceEnd = true;
+    }
+
+    if (isSentenceEnd && !(*it).IsEndSentencePunctuation()) {
+      sentences.push_back(move(sentence));
+
+      isSentenceEnd = false;
+      sentence.clear();
+    }
+
+    sentence.push_back(move(*it));
+    ++it;
+  }
+
+  sentences.push_back(move(sentence));
+
+  return sentences;
+}
 
 struct TestToken {
   string data;
