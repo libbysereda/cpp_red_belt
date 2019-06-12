@@ -28,7 +28,6 @@ vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {
 
     if (isSentenceEnd && !(*it).IsEndSentencePunctuation()) {
       sentences.push_back(move(sentence));
-
       isSentenceEnd = false;
       sentence.clear();
     }
